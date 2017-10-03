@@ -1,0 +1,72 @@
+---
+title: "Chap11-dataImport"
+output: html_notebook
+---
+
+# Data Import
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+ 
+ 
+Here we load flat files in R with the `readr` package, which is part of the core tidyverse. Some basic functions are:
+
+* `read_csv()` and `read_csv2()` reading comma and semicolon delimited files
+* `read_tsv()` reads tab delimited files, and `read_delim()` for any delimiter.
+
+Compared to the R base `read.csv()`, these functions are much faster, although for raw speed, try `data.table::fread()` is fastest. These functions produce tibbles, they don’t convert character vectors to factors, use row names, or munge the column names.
+
+## 11.2.2 Exercises
+1. `read_delim(file, delim = "|")`
+1. They have the following arguments in common: `union(names(formals(read_csv)), names(formals(read_tsv)))`.
+1. The most important argument to `read_fwf` which reads “fixed-width formats”, is `col_positions` which tells the function where data columns begin and end.
+1. use `read_delim()` to change quote marks from "" to '' using `read_delim(x, ",", quote = "'")`
+1. 
+```{r}
+read_csv("a,b\n1,2,3\n4,5,6")
+# not same length, ignores extra numbers
+read_csv("a,b,c\n1,2\n1,2,3,4")
+# adds NA for missing entry
+read_csv("a,b\n\"1")
+# ignores the extra chararcter \
+read_csv("a,b\n1,2\na,b")
+
+read_csv("a;b\n1;3")
+# treats ; like a normal character
+```
+
+## 11.3.5 Exercises
+
+1. The most important arguments to `locale()`. This specifies local formatting, eg what simbal is used to show large numerbs `10,000`, languages in date formats etc.
+    * date and time formats: `date_names`, `date_format`, and `time_format`
+    * time_zone: `tz`
+    * numbers: `decimal_mark`, `grouping_mark`
+    * encoding: `encoding`
+1. 
+    * When you set `decimal_mark` and `grouping_mark` to the same character you get error message. 
+    * The default value of `grouping_mark` becomes “.” when you set `decimal_mark` to “,”. 
+    * The default value of `decimal_mark` becomes “,” when you set the `grouping_mark` to “.”.   
+1. The `date_format` and `time_format` options to `locale()`: eg
+```{r}
+parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
+```
+1. The function `read_csv` uses a comma, while `read_csv2` uses a semi-colon (;)
+1. ...
+1. 
+```{r}
+d1 <- "January 1, 2010"
+parse_date(d1, "%B %d, %Y")
+d2 <- "2015-Mar-07"
+parse_date(d2, "%Y-%b-%d")
+d3 <- "06-Jun-2017"
+parse_date(d3, "%d-%b-%Y")
+d4 <- c("August 19 (2015)", "July 1 (2015)")
+parse_date(d4, "%B %d (%Y)")
+d5 <- "12/30/14" # Dec 30, 2014
+parse_date(d5, "%m/%d/%y")
+t1 <- "1705"
+parse_time(t1, "%H%M")
+t2 <- "11:15:10.12 PM"
+parse_time(t2, "%I:%M:%OS %p")
+```
